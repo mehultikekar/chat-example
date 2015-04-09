@@ -6,9 +6,11 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+app.use(require('express').static(__dirname + '/node_modules'));
+
 io.on('connection', function(socket){
   socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
+    socket.broadcast.emit('chat message', msg);
   });
 });
 

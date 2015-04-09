@@ -2,47 +2,87 @@
 <html>
   <head>
     <title>wits chat server</title>
+    <meta name="viewport" content="width=device-width" />
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages { list-style-type: none; margin: 0; padding: 10px; }
+      form { background: #000; padding: 1px; position: fixed; bottom: 0; width: 100%; }
+
+      #named {width: 15%; float: left; margin-right: .5%; border: 0}
+      #md { float: none; overflow: hidden; margin-right: .5%; }
+
+      input#name { width: 100%; border: 0; padding: 10px;}
+      input#m { border: 0; padding: 10px; width: 99%; }
+      button { background: rgb(130, 224, 255); border: none; padding: 10px; float: right; }
+
+      #messages { list-style-type: none; margin: 0; padding: 10px; margin-bottom: 40px; }
       #messages > li { padding: 5px 10px; }
       #messages > li:nth-child(odd) { background: #eee; }
+      #messages > li:nth-child(even) { padding-left: 2em; }
+      .emoji {
+          height: 1.2em;
+          margin-bottom: -0.2em;
+      }
+      audio { display: none; }
     </style>
   </head>
   <body>
+    <audio id="ping" src="/ping.ogg"></audio>
+
     <ul id="messages"></ul>
     <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+        <button>Send</button>
+        <div id="named"><input id="name" autocomplete="off" placeholder="name" /></div>
+        <div id="md"><input id="m" autocomplete="off" placeholder="message" /></div>
     </form>
-    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
-    <script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [["$","$"]]
-    }
-  });
-    </script>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script>
-      var socket = io();
-      var queue = MathJax.Hub.queue;
 
+    <script type="text/javascript" src="//cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.1.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/markdown-it/4.1.0/markdown-it.min.js"></script>
+    <script type="text/javascript" src="//caja.appspot.com/html-sanitizer-minified.js"></script>
+    <script type="text/javascript" src="//twemoji.maxcdn.com/twemoji.min.js"></script>
+    <script type="text/javascript" src="markdown-it-emoji/dist/markdown-it-emoji-light.min.js"></script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [["$","$"]]
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script>
+      var queue = MathJax.Hub.queue;
+      var mdHtml = window.markdownit({
+              html: true, linkify: true, typographer: true
+              }).use(window.markdownitEmoji);
+      mdHtml.renderer.rules.emoji = function(token, idx) {
+          return window.twemoji.parse(token[idx].content);
+      };
+
+      var audio = document.getElementById('ping');
+
+      function addMesg(msg) {
+        for (var i = 0; i < msg.length; i++) {
+          var li = document.createElement('li');
+          li.innerHTML = mdHtml.render(html_sanitize(msg[i]));
+          $('#messages').append(li);
+          queue.Push(["Typeset", MathJax.Hub, li]);
+        }
+      }
+
+      var socket = io();
       $('form').submit(function(){
-        socket.emit('chat message', $('#m').val());
+        var msg = [$('#name').val()+':', $('#m').val()];
+        socket.emit('chat message', msg);
+        addMesg(msg);
+
         $('#m').val('');
         return false;
       });
       socket.on('chat message', function(msg){
-        var li = document.createElement('li');
-        li.innerHTML = marked(msg);
-        $('#messages').append(li);
-        queue.Push(["Typeset", MathJax.Hub, li]);
+        addMesg(msg);
+        audio.play();
       });
     </script>
   </body>
