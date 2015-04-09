@@ -11,28 +11,31 @@
       #named {width: 15%; float: left; margin-right: .5%; border: 0}
       #md { float: none; overflow: hidden; margin-right: .5%; }
 
-      input#name { width: 100%; border: 0; padding: 10px;}
-      input#m { border: 0; padding: 10px; width: 99%; }
+      #name { background-color: white; width: 100%; border: 0; padding: 10px;}
+      #m { border: 0; padding: 10px; width: 99%; }
       button { background: rgb(130, 224, 255); border: none; padding: 10px; float: right; }
 
       #messages { list-style-type: none; margin: 0; padding: 10px; margin-bottom: 40px; }
       #messages > li { padding: 5px 10px; }
-      #messages > li:nth-child(odd) { background: #eee; }
-      #messages > li:nth-child(even) { padding-left: 2em; }
+      #messages > li.sender { margin-top: 1px; background: #eee; }
+      #messages > li.message { padding-left: 2em; }
       .emoji {
           height: 1.2em;
           margin-bottom: -0.2em;
       }
       audio { display: none; }
+      #namesp { padding: 10px; }
     </style>
   </head>
   <body>
     <audio id="ping" src="/ping.ogg"></audio>
 
+    <p id="namesp">Connected: <span id="names"></span></p>
+
     <ul id="messages"></ul>
     <form action="">
         <button>Send</button>
-        <div id="named"><input id="name" autocomplete="off" placeholder="name" /></div>
+        <div id="named"><p id="name">&nbsp;</p></div>
         <div id="md"><input id="m" autocomplete="off" placeholder="message" /></div>
     </form>
 
@@ -61,29 +64,57 @@
       };
 
       var audio = document.getElementById('ping');
+      function scrollDown () {window.scrollTo(0, document.body.scrollHeight);}
 
       function addMesg(msg) {
-        for (var i = 0; i < msg.length; i++) {
-          var li = document.createElement('li');
-          li.innerHTML = mdHtml.render(html_sanitize(msg[i]));
-          $('#messages').append(li);
-          queue.Push(["Typeset", MathJax.Hub, li]);
-        }
+        var bottom = (window.scrollY >= window.scrollMaxY);
+        $('#messages').append($('<li>', {"class": "sender", text: msg.name+':'}));
+
+        var li = document.createElement('li');
+        li.className = "message";
+        li.innerHTML = mdHtml.render(html_sanitize(msg.msg));
+        $('#messages').append(li);
+
+        if (bottom) {scrollDown();}
+        queue.Push(["Typeset", MathJax.Hub, li]);
+        if (bottom) {queue.Push([scrollDown]);}
       }
 
       var socket = io();
+
       $('form').submit(function(){
-        var msg = [$('#name').val()+':', $('#m').val()];
+        var msg = $('#m').val();
         socket.emit('chat message', msg);
-        addMesg(msg);
+        addMesg({name:"me", msg:msg});
+        scrollDown();
 
         $('#m').val('');
         return false;
       });
+
       socket.on('chat message', function(msg){
         addMesg(msg);
         audio.play();
       });
+
+      socket.on('name', function(name, fn) {
+        var new_name = prompt("What is your name?", name);
+        if (new_name == null) {new_name = name};
+
+        $("#name").text("connected as " + new_name);
+        fn(new_name);
+      });
+
+      socket.on('names', function(names) {
+        $('#names').text(names);
+      });
+
+      socket.on('update', function(msg) {
+        $('#messages').append($('<li>', {"class": "sender", text: msg}));
+        scrollDown();
+      });
+
+
     </script>
   </body>
 </html>
