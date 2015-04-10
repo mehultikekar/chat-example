@@ -72,6 +72,7 @@ socket.on('name', function(suggested_name, fn) {
   var new_name = window.prompt("What is your name?", suggested_name);
   if (new_name == null) {new_name = suggested_name};
   name = new_name;
+  $('#messages').append($('<li>', {"class": "sender", text: "You have joined as " + new_name}));
   fn(new_name);
 });
 
@@ -91,5 +92,6 @@ socket.on('update', function(msg) {
 });
 
 socket.on('disconnect', function() {
+  $('#messages').append($('<li>', {"class": "sender", text: "You went offline"}));
   $("#names").text("(you are offline)");
 });
