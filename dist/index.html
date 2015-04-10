@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+  <head>
+    <title>wits chat server</title>
+    <meta name=viewport content="width=device-width" />
+
+    <script src=//cdn.socket.io/socket.io-1.2.0.js></script>
+    <script src=//code.jquery.com/jquery-1.11.1.js></script>
+    <script src=//cdnjs.cloudflare.com/ajax/libs/markdown-it/4.1.0/markdown-it.min.js></script>
+    <script src=//caja.appspot.com/html-sanitizer-minified.js></script>
+    <script src=//twemoji.maxcdn.com/twemoji.min.js></script>
+    <script src=/markdown-it-emoji.min.js></script>
+
+    <script type=text/x-mathjax-config>
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [["$","$"]]
+        }
+      });
+    </script>
+    <script src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel=stylesheet href=/chat.css>
+
+  </head>
+  <body>
+    <audio id=ping src=/ping.ogg></audio>
+
+    <ul id=messages></ul>
+
+    <div id=bottom>
+        <p>Connected: <span id=names></span></p>
+        <form action="">
+            <button>Send</button>
+            <div id=messagediv><input id=message autocomplete=off placeholder=message /></div>
+        </form>
+    </div>
+
+    <script src=/chat.js></script>
+  </body>
+</html>

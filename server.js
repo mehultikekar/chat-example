@@ -3,16 +3,12 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var dns = require('dns');
 
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-});
-
 var names = {}
 function get_names() {
     return Object.keys(names).map(function (key) {return names[key];})
 }
 
-app.use(require('express').static(__dirname + '/node_modules'));
+app.use(require('express').static(__dirname + '/dist'));
 
 io.on('connection', function(socket){
   var addr = socket.client.conn.remoteAddress.split(':');
@@ -44,6 +40,6 @@ io.on('connection', function(socket){
   });
 });
 
-http.listen(3000, function(){
+http.listen(3001, function(){
   console.log('listening on *:3000');
 });

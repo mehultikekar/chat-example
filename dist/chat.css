@@ -1,0 +1,24 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font: 13px Helvetica, Arial; }
+#bottom { position: fixed; bottom: 0; width: 100%; padding: 10px; }
+#bottom p {padding: 10px 5px;}
+
+#messagediv { float: none; overflow: hidden;}
+#message { width: 100%; 
+           border: 0 none; height: 3em; padding: 0 1em;}
+
+button { background: rgb(130, 224, 255); float: right; 
+         border: 0 none; height: 3em; padding: 0 1em;}
+
+form { border: 1px solid black;}
+
+#messages { list-style-type: none; margin: 0; padding: 10px; margin-bottom: 40px; }
+#messages > li { padding: 5px 10px; }
+#messages > li.sender { margin-top: 1px; background: #eee; }
+#messages > li.message { padding-left: 2em; }
+.emoji {
+    height: 1.2em;
+    margin-bottom: -0.2em;
+}
+audio { display: none; }
+#namesp { padding: 10px; }
