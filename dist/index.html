@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>wits chat server</title>
-    <meta name=viewport content="width=device-width" />
+    <meta name=viewport content="width=device-width">
 
     <script src=/socket.io-1.2.0.js></script>
     <script src=/jquery-1.11.1.min.js></script>
@@ -18,7 +18,7 @@
         }
       });
     </script>
-    <script src="/MathJax.js"></script>
+    <script src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel=stylesheet href=/chat.css>
 
   </head>
@@ -31,7 +31,7 @@
         <p>Connected: <span id=names></span></p>
         <form action="">
             <button>Send</button>
-            <div id=messagediv><input id=message autocomplete=on autofocus placeholder=message /></div>
+            <div id=messagediv><input id=message autocomplete=on autofocus placeholder=message></div>
         </form>
     </div>
 
