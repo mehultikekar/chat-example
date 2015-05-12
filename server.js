@@ -1,4 +1,5 @@
 var app = require('express')();
+require('date-format-lite');
 var fs = require('fs');
 function read_ssl (f) {
     return fs.readFileSync(__dirname + '/ssl/' + f);
@@ -58,7 +59,8 @@ io.on('connection', function(socket){
   socket.broadcast.emit('new', {id:id, name:name});
 
   socket.on('chat message', function(msg){
-    io.emit('chat message', {id:id, msg:msg});
+    var now = new Date();
+    io.emit('chat message', {id:id, msg:msg, time:now.format("H:mm A, DDD MMM D")});
   });
 
   socket.on('disconnect', function() {

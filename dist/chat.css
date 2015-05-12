@@ -31,3 +31,4 @@ code { font-size: 1.5em; }
 #names li {display: inline}
 #names li:after {content: ", "}
 #names li:last-child:after {content: ""}
+span.time {float: right}

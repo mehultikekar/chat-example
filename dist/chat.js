@@ -21,17 +21,21 @@ var id = -1;
 var names = {};
 
 function addPerson (i) {
-  $('#names').append($('<li>', {"id": i, text: names[i] + (i == id? "(me)": "")}));
+  $('#names').append($('<li>', {"id": i, "text": names[i] + (i == id? "(me)": "")}));
 }
 function addInfo (info) {
-  $('#messages').append($('<li>', {"class": "info", text: info}));
+  $('#messages').append($('<li>', {"class": "info", "text": info}));
 }
 
 // add new message to page
 var queue = MathJax.Hub.queue;
 function addMesg(msg) {
   var bottom = atBottom();
-  addInfo((id == msg.id? 'me': names[msg.id]) + ':');
+  var n = (id == msg.id? 'me': names[msg.id]) + ':';
+  $('#messages').append($('<li>', {
+      "class": "info",
+      "html": n + "<span class=time>" + msg.time + "</span>"
+  }));
 
   var li = document.createElement('li');
   li.className = "message";

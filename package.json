@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "my first socket.io app",
   "dependencies": {
+    "date-format-lite": "^0.7.1",
     "express": "4.10.2",
     "markdown-it-emoji": "^1.0.0",
     "socket.io": "1.2.0"
