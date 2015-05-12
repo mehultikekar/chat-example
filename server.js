@@ -1,45 +1,74 @@
 var app = require('express')();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var dns = require('dns');
-
-var names = {}
-function get_names() {
-    return Object.keys(names).map(function (key) {return names[key];})
+var fs = require('fs');
+function read_ssl (f) {
+    return fs.readFileSync(__dirname + '/ssl/' + f);
 }
+var ssl_opts = {
+    key: read_ssl('cayenne.mit.edu.key'),
+    cert: read_ssl('cayenne_mit_edu.cer'),
+    ca: read_ssl('mit_client.crt'),
+    crl: read_ssl('mit_client.crl'),
+    requestCert: true,
+    rejectUnauthorized: false
+};
+var https = require('https').createServer(ssl_opts, app);
+var io = require('socket.io')(https, {secure:true});
 
+// http authentication middleware
+app.use(function(req, res, next) {
+    if (req.client.authorized) {
+        next();
+    }
+    else {
+        res.writeHead(401, {"Content-Type": "text/html"});
+        fs.readFile(__dirname + '/dist/401.html', function (err, data) {
+            if (err) throw err;
+            else res.end(data);
+        });
+    }
+});
+
+// for serving static resources
 app.use(require('express').static(__dirname + '/dist'));
 
-io.on('connection', function(socket){
-  var addr = socket.client.conn.remoteAddress.split(':');
-  addr = addr[addr.length - 1];
-  var id = socket.id;
+// socket authentication middleware
+io.use(function(socket, next) {
+    var req = socket.request;
+    if (req.client.authorized) {
+        var cert = req.connection.getPeerCertificate().subject;
+        socket.user_id = cert.emailAddress.split('@')[0];
+        socket.user_name = cert.CN;
+        next();
+    }
+});
 
-  dns.reverse(addr, function (err, domains) {
-      var name = (err == null)? (domains[0].split('.')[0]) : addr;
-      socket.emit('name', name, function(new_name) {
-          names[id] = new_name;
-          console.log("Renamed", addr, "to", new_name);
-          io.emit('names', get_names());
-          socket.broadcast.emit('update', new_name + ' has connected.');
-      });
-  });
+var names = {}
+
+io.on('connection', function(socket){
+  var id = socket.id;
+  var name = socket.user_name;
+  console.log(name, "has connected from", socket.client.conn.remoteAddress);
+  names[id] = name;
+  console.log(names);
+
+  // tell client its id and all names
+  socket.emit('id', {id:id, names:names});
+
+  // tell others about it
+  socket.broadcast.emit('new', {id:id, name:name});
 
   socket.on('chat message', function(msg){
-    socket.broadcast.emit('chat message', {name:names[id], msg:msg});
+    io.emit('chat message', {id:id, msg:msg});
   });
 
-  console.log("New connection from", addr);
-
   socket.on('disconnect', function() {
-    var name = names[id];
     delete names[id];
     console.log("Disconnected from", name);
-    io.emit('names', get_names());
-    io.emit('update', name + ' has disconnected.');
+    console.log(names);
+    io.emit('left', id);
   });
 });
 
-http.listen(3000, function(){
-  console.log('listening on *:3000');
+https.listen(8443, function(){
+  console.log('listening on *:8443');
 });

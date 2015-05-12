@@ -1,18 +1,7 @@
 var inactive = true; // if tab is not in focus
-function onBlur() {
-  inactive = true;
-};
-function onFocus(){
-  inactive = false;
-};
 
-if (/*@cc_on!@*/false) { // check for Internet Explorer
-  document.onfocusin = onFocus;
-  document.onfocusout = onBlur;
-} else {
-  window.onfocus = onFocus;
-  window.onblur = onBlur;
-}
+window.onfocus = function () {inactive = false;};
+window.onblur = function () {inactive = true;};
 
 // markdown setup
 var mdHtml = window.markdownit({
@@ -27,11 +16,22 @@ mdHtml.renderer.rules.emoji = function(token, idx) {
 function scrollDown () {window.scrollTo(0, document.body.scrollHeight);}
 function atBottom() {return (window.innerHeight + window.scrollY) >= document.body.offsetHeight;}
 
+var socket = io();
+var id = -1;
+var names = {};
+
+function addPerson (i) {
+  $('#names').append($('<li>', {"id": i, text: names[i] + (i == id? "(me)": "")}));
+}
+function addInfo (info) {
+  $('#messages').append($('<li>', {"class": "info", text: info}));
+}
+
 // add new message to page
 var queue = MathJax.Hub.queue;
 function addMesg(msg) {
   var bottom = atBottom();
-  $('#messages').append($('<li>', {"class": "sender", text: msg.name+':'}));
+  addInfo((id == msg.id? 'me': names[msg.id]) + ':');
 
   var li = document.createElement('li');
   li.className = "message";
@@ -40,22 +40,17 @@ function addMesg(msg) {
   v.find('a').attr('target', '_blank');
   $('#messages').append(v);
 
-  if (bottom) {scrollDown();}
+  if (bottom || (msg.id == id)) {scrollDown();}
   queue.Push(["Typeset", MathJax.Hub, li]);
-  if (bottom) {queue.Push([scrollDown]);}
+  if (bottom || (msg.id == id)) {queue.Push([scrollDown]);}
   return bottom;
 }
-
-var socket = io();
 
 // all the events
 // send message
 $('form').submit(function(){
   var msg = $('#message').val();
   socket.emit('chat message', msg);
-  addMesg({name:"me", msg:msg});
-  scrollDown();
-
   $('#message').val('');
   return false;
 });
@@ -63,35 +58,32 @@ $('form').submit(function(){
 // receive message
 socket.on('chat message', function(msg){
   var bottom = addMesg(msg);
-  if (inactive || !bottom) {document.getElementById('ping').play();}
+  if ((inactive || !bottom) && (msg.id != id)) {document.getElementById('ping').play();}
 });
 
-// prompt for name when server asks and send response as a socket acknowledgement
-var name;
-socket.on('name', function(suggested_name, fn) {
-  var new_name = window.prompt("What is your name?", suggested_name);
-  if (new_name == null) {new_name = suggested_name};
-  name = new_name;
-  $('#messages').append($('<li>', {"class": "sender", text: "You have joined as " + new_name}));
-  fn(new_name);
+socket.on('id', function(msg) {
+    id = msg.id;
+    names = msg.names;
+    addInfo("You have joined as " + names[id]);
+    $('#names').text('');
+    for (i in msg.names) {addPerson(i);}
 });
 
 // update list of connected people
-socket.on('names', function(names) {
-  var my_idx = names.indexOf(name);
-  if (my_idx != -1) {
-    names[my_idx] = name + '(me)';
-  }
-  $('#names').text(names);
+socket.on('new', function(msg) {
+    names[msg.id] = msg.name;
+    addInfo(msg.name + " has joined");
+    addPerson(msg.id);
 });
 
-// add message from server e.g. person connected/disconnected
-socket.on('update', function(msg) {
-  $('#messages').append($('<li>', {"class": "sender", text: msg}));
-  if(!atBottom()) {scrollDown();}
+socket.on('left', function(i) {
+    var n = names[i];
+    addInfo(n + " has left");
+    delete names[i];
+    document.getElementById('names').querySelector('#'+i).remove();
 });
 
 socket.on('disconnect', function() {
-  $('#messages').append($('<li>', {"class": "sender", text: "You went offline"}));
+  addInfo("You went offline");
   $("#names").text("(you are offline)");
 });
