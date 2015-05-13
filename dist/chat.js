@@ -21,7 +21,7 @@ var id = -1;
 var names = {};
 
 function addPerson (i) {
-  $('#names').append($('<li>', {"id": i, "text": names[i] + (i == id? "(me)": "")}));
+  $('#names').append($('<li>', {"id": i, "text": names[i] + (i == id? " (me)": "")}));
 }
 function addInfo (info) {
   $('#messages').append($('<li>', {"class": "info", "text": info}));

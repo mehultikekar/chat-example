@@ -13,7 +13,7 @@ var ssl_opts = {
     rejectUnauthorized: false
 };
 var https = require('https').createServer(ssl_opts, app);
-var io = require('socket.io')(https, {secure:true});
+var io = require('socket.io')(https);
 
 // http authentication middleware
 app.use(function(req, res, next) {
