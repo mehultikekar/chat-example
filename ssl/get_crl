@@ -1,0 +1,3 @@
+#!/bin/bash
+curl -s "http://ca.mit.edu/mitClient.crt" | openssl x509 -inform DER -out mit_client.crt -outform PEM
+curl -s "http://ca.mit.edu/ca/mitclient.crl" | openssl crl -inform DER -out mit_client.crl -outform PEM
