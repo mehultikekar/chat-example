@@ -18,6 +18,7 @@ form { border: 1px solid black;}
 #messages { list-style-type: none; margin: 0; padding: 1em 1em 7em 1em; min-height: 100%; }
 #messages > li { padding: 0.5em 1em; }
 #messages > li.info { font-size: 0.9em; margin-top: 1px; background: #eee; }
+#messages > li.md { margin-top: 1px; background: #eee; color: #666; margin-left: 1em; }
 #messages > li.message { padding-left: 1.5em; }
 
 .emoji { height: 1.2em; margin-bottom: -0.2em}

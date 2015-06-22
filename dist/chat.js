@@ -17,23 +17,25 @@ function addPerson (i) {
 function addInfo (info) {
   $('#messages').append($('<li>', {"class": "info", "text": info}));
 }
+function li (className, html) {
+    return $('<li>', {"class": className, "html": html});
+}
 
 // add new message to page
 function addMesg(msg) {
   var bottom = atBottom();
-  var n = (id == msg.id? 'me': names[msg.id]) + ':';
-  $('#messages').append($('<li>', {
-      "class": "info",
-      "html": n + "<span class=time>" + msg.time + "</span>"
-  }));
 
-  var li = document.createElement('li');
-  li.className = "message";
-  li.innerHTML = msg.msg;
-  li.setAttribute('title', msg.md);
-  var v = $(li);
-  v.find('a').attr('target', '_blank');
-  $('#messages').append(v);
+  var n = (id == msg.id? 'me': names[msg.id]) + ':';
+  $('#messages').append(li("info", n + "<span class=time>" + msg.time + "</span>"));
+
+  var m = li("message", msg.msg).attr('title', msg.md);
+  m.find('a').attr('target', '_blank');
+  m.click(function () {$(this).next().toggle();});
+  $('#messages').append(m);
+
+  var md = li("md", "<pre>" + msg.md + "</pre>");
+  md.css({'display': 'none'});
+  $('#messages').append(md);
 
   if (bottom || (msg.id == id)) {scrollDown();}
   return bottom;
