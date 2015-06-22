@@ -12,7 +12,11 @@ var md = require('markdown-it')({
 var twemoji = require('twemoji');
 
 md.renderer.rules.emoji = function(token, idx) {
-  return twemoji.parse(token[idx].content);
+  return twemoji.parse(
+          token[idx].content,
+          function(icon, options, variant) {
+              return '/twemoji/' + icon + '.svg';
+          });
 };
 
 module.exports = md;
