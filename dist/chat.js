@@ -3,15 +3,6 @@ var inactive = true; // if tab is not in focus
 window.onfocus = function () {inactive = false;};
 window.onblur = function () {inactive = true;};
 
-// markdown setup
-var mdHtml = window.markdownit({
-  html: true, linkify: true, typographer: true
-}).use(window.markdownitEmoji);
-
-mdHtml.renderer.rules.emoji = function(token, idx) {
-  return window.twemoji.parse(token[idx].content);
-};
-
 // convenience functions
 function scrollDown () {window.scrollTo(0, document.body.scrollHeight);}
 function atBottom() {return (window.innerHeight + window.scrollY) >= document.body.offsetHeight;}
@@ -28,7 +19,6 @@ function addInfo (info) {
 }
 
 // add new message to page
-var queue = MathJax.Hub.queue;
 function addMesg(msg) {
   var bottom = atBottom();
   var n = (id == msg.id? 'me': names[msg.id]) + ':';
@@ -39,14 +29,12 @@ function addMesg(msg) {
 
   var li = document.createElement('li');
   li.className = "message";
-  li.innerHTML = mdHtml.render(html_sanitize(msg.msg));
+  li.innerHTML = msg.msg;
   var v = $(li);
   v.find('a').attr('target', '_blank');
   $('#messages').append(v);
 
   if (bottom || (msg.id == id)) {scrollDown();}
-  queue.Push(["Typeset", MathJax.Hub, li]);
-  if (bottom || (msg.id == id)) {queue.Push([scrollDown]);}
   return bottom;
 }
 
