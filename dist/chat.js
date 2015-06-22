@@ -30,6 +30,7 @@ function addMesg(msg) {
   var li = document.createElement('li');
   li.className = "message";
   li.innerHTML = msg.msg;
+  li.setAttribute('title', msg.md);
   var v = $(li);
   v.find('a').attr('target', '_blank');
   $('#messages').append(v);

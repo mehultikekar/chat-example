@@ -61,8 +61,10 @@ io.on('connection', function(socket){
   socket.broadcast.emit('new', {id:id, name:name});
 
   socket.on('chat message', function(msg){
-    var now = new Date();
-    io.emit('chat message', {id:id, msg:md.render(msg), time:now.format("H:mm A, DDD MMM D")});
+    if (! /^\s*$/.test(msg)) {
+      var now = new Date();
+      io.emit('chat message', {id:id, msg:md.render(msg), md:msg, time:now.format("H:mm A, DDD MMM D")});
+    }
   });
 
   socket.on('disconnect', function() {
