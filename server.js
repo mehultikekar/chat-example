@@ -1,7 +1,7 @@
 require('date-format-lite') // overrides default Date class
 function time_str() {
   var now = new Date()
-  return now.format("H:mm A, DDD MMM D")
+  return now.format('H:mm A, DDD MMM D')
 }
 
 var fs = require('fs')
@@ -37,7 +37,7 @@ app.use(function(req, res, next) {
     next()
   }
   else {
-    res.writeHead(401, {"Content-Type": "text/html"})
+    res.writeHead(401, {'Content-Type': 'text/html'})
     fs.readFile(__dirname + '/dist/401.html', function (err, data) {
       if (err) throw err
       else res.end(data)
@@ -65,7 +65,7 @@ io.on('connection', function(socket){
   var id = socket.id
     , name = socket.user_name
 
-  console.log(name, "has connected from", socket.client.conn.remoteAddress)
+  console.log(name, 'has connected from', socket.client.conn.remoteAddress)
   names[id] = name
   console.log(names)
 
@@ -87,7 +87,7 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function() {
     delete names[id]
-    console.log("Disconnected from", name)
+    console.log('Disconnected from', name)
     console.log(names)
     io.emit('left', id)
   })

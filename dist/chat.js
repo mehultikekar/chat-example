@@ -16,11 +16,11 @@ function atBottom() {
 }
 
 function addPerson (i) {
-  $('#names').append($('<li>', {id: i, text: names[i] + (i == id? " (me)": "")}))
+  $('#names').append($('<li>', {id: i, text: names[i] + (i == id? ' (me)': '')}))
 }
 
 function addInfo (info) {
-  $('#messages').append($('<li>', {class: "info", text: info}))
+  $('#messages').append($('<li>', {class: 'info', text: info}))
 }
 
 function li (className, html) {
@@ -32,9 +32,9 @@ function addMesg(msg) {
   var bottom = atBottom()
     , n = (id == msg.id? 'me': names[msg.id]) + ':'
 
-  $('#messages').append(li("info", n + "<span class=time>" + msg.time + "</span>"))
+  $('#messages').append(li('info', n + '<span class=time>' + msg.time + '</span>'))
 
-  var m = li("message", msg.msg).attr('title', msg.md)
+  var m = li('message', msg.msg).attr('title', msg.md)
   m.find('a').attr('target', '_blank')
   m.click(function () {
     $(this).next().toggle()
@@ -42,7 +42,7 @@ function addMesg(msg) {
   })
   $('#messages').append(m)
 
-  var md = li("md", "<pre>" + msg.md + "</pre>")
+  var md = li('md', '<pre>' + msg.md + '</pre>')
   md.css({display: 'none'})
   $('#messages').append(md)
 
@@ -68,7 +68,7 @@ socket.on('chat message', function(msg){
 socket.on('id', function(msg) {
   id = msg.id
   names = msg.names
-  addInfo("You have joined as " + names[id])
+  addInfo('You have joined as ' + names[id])
   $('#names').text('')
   for (i in msg.names) addPerson(i)
 })
@@ -76,18 +76,18 @@ socket.on('id', function(msg) {
 // update list of connected people
 socket.on('new', function(msg) {
   names[msg.id] = msg.name
-  addInfo(msg.name + " has joined")
+  addInfo(msg.name + ' has joined')
   addPerson(msg.id)
 })
 
 socket.on('left', function(i) {
     var n = names[i]
-    addInfo(n + " has left")
+    addInfo(n + ' has left')
     delete names[i]
     document.getElementById('names').querySelector('#'+i).remove()
 })
 
 socket.on('disconnect', function() {
-  addInfo("You went offline")
-  $("#names").text("(you are offline)")
+  addInfo('You went offline')
+  $('#names').text('(you are offline)')
 })
