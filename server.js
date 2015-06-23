@@ -4,15 +4,17 @@ function time_str() {
   return now.format('H:mm A, DDD MMM D')
 }
 
-var fs = require('fs')
-function read_ssl (f) {
-  return fs.readFileSync(__dirname + '/ssl/' + f)
-}
-
+// print time with log
 var log = console.log
 console.log = function() {
   log.call(console, time_str())
-  log.apply(console, arguments);
+  log.apply(console, arguments)
+}
+
+// ssl options
+var fs = require('fs')
+function read_ssl (f) {
+  return fs.readFileSync(__dirname + '/ssl/' + f)
 }
 
 var ssl_opts = {
@@ -24,14 +26,14 @@ var ssl_opts = {
   rejectUnauthorized: false
 }
 
+// setup https and socket servers
 var app = require('express')()
   , gzip = require('connect-gzip-static')
   , https = require('https').createServer(ssl_opts, app)
   , io = require('socket.io')(https)
   , md = require('./md')
 
-
-// http authentication middleware
+// https authentication middleware
 app.use(function(req, res, next) {
   if (req.client.authorized) {
     next()
@@ -75,6 +77,7 @@ io.on('connection', function(socket){
   // tell others about it
   socket.broadcast.emit('new', {id:id, name:name})
 
+  // core logic - render incoming message to HTML and send to all
   socket.on('chat message', function(msg){
     if (! /^\s*$/.test(msg))
       io.emit('chat message', {

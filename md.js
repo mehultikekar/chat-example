@@ -15,9 +15,9 @@ var md = require('markdown-it')({
   linkify: true,
   typographer: true
 })
-.use(require('markdown-it-emoji'))
-.use(require('markdown-it-simplemath'), {inlineRenderer: latexRender})
-.use(require('markdown-it-sanitizer'))
+  .use(require('markdown-it-emoji'))
+  .use(require('markdown-it-simplemath'), {inlineRenderer: latexRender})
+  .use(require('markdown-it-sanitizer'))
 
 md.renderer.rules.emoji = function(token, idx) {
   return twemoji.parse(
