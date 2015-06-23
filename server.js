@@ -25,7 +25,7 @@ var ssl_opts = {
 }
 
 var app = require('express')()
-  , gzip = require('connect-gzip')
+  , gzip = require('connect-gzip-static')
   , https = require('https').createServer(ssl_opts, app)
   , io = require('socket.io')(https)
   , md = require('./md')
@@ -46,7 +46,7 @@ app.use(function(req, res, next) {
 })
 
 // for serving static resources
-app.use(gzip.staticGzip(__dirname + '/dist', {matchType: /text|javascript|svg/}))
+app.use(gzip(__dirname + '/dist'))
 
 // socket authentication middleware
 io.use(function(socket, next) {
