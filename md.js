@@ -5,6 +5,7 @@ function latexRender(str) {
   try {
     return katex.renderToString(str)
   } catch (err) {
+    console.log(err)
     return str
   }
 }

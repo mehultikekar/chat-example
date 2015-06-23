@@ -1,6 +1,18 @@
+require('date-format-lite') // overrides default Date class
+function time_str() {
+  var now = new Date()
+  return now.format("H:mm A, DDD MMM D")
+}
+
 var fs = require('fs')
 function read_ssl (f) {
   return fs.readFileSync(__dirname + '/ssl/' + f)
+}
+
+var log = console.log
+console.log = function() {
+  log.call(console, time_str())
+  log.apply(console, arguments);
 }
 
 var ssl_opts = {
@@ -17,7 +29,6 @@ var app = require('express')()
   , io = require('socket.io')(https)
   , md = require('./md')
 
-require('date-format-lite') // overrides default Date class
 
 // http authentication middleware
 app.use(function(req, res, next) {
@@ -64,10 +75,13 @@ io.on('connection', function(socket){
   socket.broadcast.emit('new', {id:id, name:name})
 
   socket.on('chat message', function(msg){
-    if (! /^\s*$/.test(msg)) {
-      var now = new Date()
-      io.emit('chat message', {id:id, msg:md.render(msg), md:msg, time:now.format("H:mm A, DDD MMM D")})
-    }
+    if (! /^\s*$/.test(msg))
+      io.emit('chat message', {
+        id:id,
+        msg:md.render(msg),
+        md:msg,
+        time:time_str()
+      })
   })
 
   socket.on('disconnect', function() {
