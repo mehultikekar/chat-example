@@ -11,8 +11,8 @@ function scrollDown () {
   window.scrollTo(0, document.body.scrollHeight)
 }
 
-function atBottom() {
-  return (window.innerHeight + window.scrollY) >= document.body.offsetHeight
+function atBottom(margin) {
+  return (window.innerHeight + window.scrollY + margin) >= document.body.offsetHeight
 }
 
 function addPerson (i) {
@@ -29,7 +29,7 @@ function li (className, html) {
 
 // add new message to page
 function addMesg(msg) {
-  var bottom = atBottom()
+  var bottom = atBottom(0)
     , n = (id == msg.id? 'me': names[msg.id]) + ':'
 
   $('#messages').append(li('info', n + '<span class=time>' + msg.time + '</span>'))
@@ -37,8 +37,9 @@ function addMesg(msg) {
   var m = li('message', msg.msg).attr('title', msg.md)
   m.find('a').attr('target', '_blank')
   m.click(function () {
+    var bottom = atBottom(10)
     $(this).next().toggle()
-    if (atBottom()) scrollDown()
+    if (bottom) scrollDown()
   })
   $('#messages').append(m)
 
