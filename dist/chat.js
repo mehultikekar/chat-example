@@ -35,7 +35,6 @@ function addMesg(msg) {
   $('#messages').append(li('info', n + '<span class=time>' + msg.time + '</span>'))
 
   var m = li('message', msg.msg).attr('title', msg.md)
-  m.find('a').attr('target', '_blank')
   m.click(function () {
     var bottom = atBottom(10)
     $(this).next().toggle()
