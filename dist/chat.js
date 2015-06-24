@@ -23,33 +23,6 @@ function addInfo (info) {
   $('#messages').append($('<li>', {class: 'info', text: info}))
 }
 
-function li (className, html) {
-  return $('<li>', {class: className, html: html})
-}
-
-// add new message to page
-function addMesg(msg) {
-  var bottom = atBottom(0)
-    , n = (id == msg.id? 'me': names[msg.id]) + ':'
-
-  $('#messages').append(li('info', n + '<span class=time>' + msg.time + '</span>'))
-
-  var m = li('message', msg.msg).attr('title', msg.md)
-  m.click(function () {
-    var bottom = atBottom(10)
-    $(this).next().toggle()
-    if (bottom) scrollDown()
-  })
-  $('#messages').append(m)
-
-  var md = li('md', '<pre>' + msg.md + '</pre>')
-  md.css({display: 'none'})
-  $('#messages').append(md)
-
-  if (bottom || (msg.id == id)) scrollDown()
-  return bottom
-}
-
 // all the events
 // send message
 $('form').submit(function(){
@@ -61,8 +34,30 @@ $('form').submit(function(){
 
 // receive message
 socket.on('chat message', function(msg){
-  var bottom = addMesg(msg)
-  if ((inactive || !bottom) && (msg.id != id)) document.getElementById('ping').play()
+  var bottom = atBottom(0)
+    , n = (id == msg.id? 'me': names[msg.id]) + ':'
+
+  $('#messages').append(
+    $('<li>', {class: 'info', text: n}).append(
+      $('<span>', {class: 'time', text: msg.time})
+    ),
+
+    $('<li>', {class: 'message', html: msg.msg, title: msg.md}).click(
+      function() {
+        var bottom = atBottom(10)
+          $(this).next().toggle()
+          if (bottom) scrollDown()
+      }),
+
+    $('<li>', {class: 'md'}).css({display: 'none'}).append(
+      $('<pre>', {text: msg.md})
+    )
+  )
+
+  if ((inactive || !bottom) && (msg.id != id))
+    document.getElementById('ping').play()
+  else
+    scrollDown()
 })
 
 socket.on('id', function(msg) {
