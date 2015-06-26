@@ -11,7 +11,7 @@
 
   </head>
   <body>
-    <audio id=ping src=/ping.ogg></audio>
+    <audio src=/ping.ogg></audio>
 
     <h2 id=title>Welcome to cayenne - the spicy chat server!</h2>
     <p id=subtitle>We support basic <a href=https://confluence.atlassian.com/display/STASH/Markdown+syntax+guide target=_blank>Markdown</a>, <a href=http://www.emoji-cheat-sheet.com target=_blank>emojis</a>, and basic <a href=https://en.wikibooks.org/wiki/LaTeX/Mathematics target=_blank>LaTeX math</a> (inside $...$). See <a href=https://github.com/mehultikekar/chat-example target=_blank>source code</a>.</p>
@@ -22,7 +22,7 @@
       <ul id=names></ul>
       <form action="">
         <button>Send</button>
-        <div id=messagediv><input id=message autocomplete=on autofocus placeholder=message></div>
+        <div id=messagediv><textarea rows=1 id=message autofocus placeholder=message></textarea></div>
       </form>
     </div>
 

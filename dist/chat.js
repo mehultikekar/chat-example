@@ -15,13 +15,13 @@ function atBottom(margin) {
   return (window.innerHeight + window.scrollY + margin) >= document.body.offsetHeight
 }
 
-var d_byId = function (id) {return document.getElementById(id)}
-  , d_messages = d_byId('messages')
-  , d_names = d_byId('names')
-  , d_ping = d_byId('ping')
-  , d_input = d_byId('message')
+function $(q) {return document.body.querySelector(q)}
+var d_messages = $('#messages')
+  , d_names = $('#names')
+  , d_ping = $('audio')
+  , d_input = $('#message')
 
-function d_elem(tag, attrs, text) {
+function $$(tag, attrs, text) {
   attrs = attrs || {}
   var elem = document.createElement(tag)
   for (attr in attrs) elem.setAttribute(attr, attrs[attr])
@@ -30,19 +30,29 @@ function d_elem(tag, attrs, text) {
 }
 
 function addPerson (i) {
-  d_names.appendChild(d_elem('li', {id: i}, names[i] + (i == id? ' (me)': '')))
+  d_names.appendChild($$('li', {id: i}, names[i] + (i == id? ' (me)': '')))
 }
 
 function addInfo (info) {
-  d_messages.appendChild(d_elem('li', {class: 'info'}, info))
+  d_messages.appendChild($$('li', {class: 'info'}, info))
 }
 
 // all the events
 // send message
-document.forms[0].onsubmit = function(){
+function send_message(){
   socket.emit('chat message', d_input.value)
   d_input.value = ''
   return false
+}
+
+document.forms[0].onsubmit = send_message
+d_input.onkeypress = function(e){
+  // send on enter. new line on shift-enter
+  if (e.keyCode === 13 && !e.shiftKey){
+    send_message()
+    return false
+  }
+  return true
 }
 
 // receive message
@@ -51,12 +61,12 @@ socket.on('chat message', function(msg){
     , n = (id == msg.id? 'me': names[msg.id]) + ':'
 
   // sender name and time
-  var elem = d_elem('li', {class: 'info'}, n)
-  elem.appendChild(d_elem('span', {class: 'time'}, msg.time))
+  var elem = $$('li', {class: 'info'}, n)
+  elem.appendChild($$('span', {class: 'time'}, msg.time))
   d_messages.appendChild(elem)
 
   // actual message. click to toggle display of original markdown
-  var elem = d_elem('li', {class: 'message', title: msg.md})
+  var elem = $$('li', {class: 'message', title: msg.md})
   elem.innerHTML = msg.msg
   elem.onclick = function() {
     var bottom = atBottom(10)
@@ -68,9 +78,9 @@ socket.on('chat message', function(msg){
   d_messages.appendChild(elem)
 
   // original markdown
-  var elem = d_elem('li', {class: 'md'})
+  var elem = $$('li', {class: 'md'})
   elem.style.display = 'none'
-  elem.appendChild(d_elem('pre', {}, msg.md))
+  elem.appendChild($$('pre', {}, msg.md))
   d_messages.appendChild(elem)
 
   if ((inactive || !bottom) && (msg.id != id))

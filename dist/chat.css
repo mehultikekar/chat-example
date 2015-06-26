@@ -4,14 +4,12 @@ body { font: 0.9em Helvetica, Arial; }
           position: fixed; bottom: 0;
           padding: 0 1em 1em; border-top: 1px solid #eee;}
 
-#bottom ul {font-size: 0.9em; padding: 1em 0.5em;}
-
 #messagediv { float: none; overflow: hidden;}
-#message { width: 100%; height: 3em;
-           border: 0 none; padding: 0 1em;}
+#message { width: 100%; height: 36px; resize: none;
+           border: 0 none; padding: 2px;}
 
 button { background: rgb(130, 224, 255); float: right;
-         border: 0 none; height: 3em; padding: 0 1em;}
+         border: 0 none; height: 36px; padding: 0 1em;}
 
 form { border: 1px solid black;}
 
@@ -26,7 +24,7 @@ form { border: 1px solid black;}
 audio { display: none; }
 code { font-size: 1.5em; }
 
-#names {list-style: none}
+#names {list-style: none; padding: 1em 2px; font-size: 0.9em}
 #names:before {content: "Connected: "}
 #names li {display: inline}
 #names li:after {content: ", "}
