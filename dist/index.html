@@ -1,31 +1,28 @@
 <!doctype html>
-<html>
-  <head>
-    <title>cayenne - the spicy chat server</title>
-    <meta name=viewport content="width=device-width">
-    <link rel=icon href=cayenne2.png sizes="16x16" type="image/png">
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width">
+<title>cayenne - the spicy chat server</title>
+<link rel=icon href=cayenne2.png sizes=16x16 type=image/png>
 
-    <script src=/socket.io-1.2.0.js></script>
-    <link rel=stylesheet href=/chat.css>
-    <link rel=stylesheet href=/katex/katex.min.css>
+<script src=socket.io-1.2.0.js></script>
+<link rel=stylesheet href=chat.css>
+<link rel=stylesheet href=katex/katex.min.css>
 
-  </head>
-  <body>
-    <audio src=/ping.ogg></audio>
+<audio src=ping.ogg></audio>
 
-    <h2 id=title>Welcome to cayenne - the spicy chat server!</h2>
-    <p id=subtitle>We support basic <a href=https://confluence.atlassian.com/display/STASH/Markdown+syntax+guide target=_blank>Markdown</a>, <a href=http://www.emoji-cheat-sheet.com target=_blank>emojis</a>, and basic <a href=https://en.wikibooks.org/wiki/LaTeX/Mathematics target=_blank>LaTeX math</a> (inside $...$). See <a href=https://github.com/mehultikekar/chat-example target=_blank>source code</a>.</p>
+<h2 id=title>Welcome to cayenne - the spicy chat server!</h2>
+<p id=subtitle>We support basic <a href=https://confluence.atlassian.com/display/STASH/Markdown+syntax+guide target=_blank>Markdown</a>, <a href=http://www.emoji-cheat-sheet.com target=_blank>emojis</a>, and basic <a href=https://en.wikibooks.org/wiki/LaTeX/Mathematics target=_blank>LaTeX math</a> (inside $...$). See <a href=https://github.com/mehultikekar/chat-example target=_blank>source code</a>.</p>
 
-    <ul id=messages></ul>
+<ul id=messages></ul>
 
-    <div id=bottom>
-      <ul id=names></ul>
-      <form action="">
-        <button>Send</button>
-        <div id=messagediv><textarea rows=1 id=message autofocus placeholder=message></textarea></div>
-      </form>
+<div id=bottom>
+  <ul id=names></ul>
+  <form>
+    <button>Send</button>
+    <div id=messagediv>
+      <textarea id=message autofocus placeholder=message></textarea>
     </div>
+  </form>
+</div>
 
-    <script src=/chat.js></script>
-  </body>
-</html>
+<script src=chat.js></script>
